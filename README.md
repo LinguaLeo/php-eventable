@@ -1,4 +1,4 @@
-php-eventable
-=============
+Eventable
+=========
 
 Micro framework for dispatching events
