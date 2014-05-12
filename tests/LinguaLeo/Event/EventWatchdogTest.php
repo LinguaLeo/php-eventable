@@ -26,74 +26,78 @@
 
 namespace LinguaLeo\Event;
 
-class EventWatchdogTraitTest extends \PHPUnit_Framework_TestCase
+class EventWatchdogTest extends \PHPUnit_Framework_TestCase
 {
-    use EventWatchdogTrait;
-
     public function testEmptyPromise()
     {
         $running = false;
-        $this->promise('something', function () use (&$running) {
+        $watchdog = new EventWatchdog();
+        $watchdog->promise('something', function () use (&$running) {
             $running = true;
         });
-        $this->assertTrue($this->emit('something'));
+        $this->assertTrue($watchdog->emit('something'));
         $this->assertFalse($running);
     }
 
     public function testWatchAfterPromise()
     {
         $sum = 0;
-        $this->promise('add', function ($a, $b) use (&$sum) {
+        $watchdog = new EventWatchdog();
+        $watchdog->promise('add', function ($a, $b) use (&$sum) {
             $sum += $a + $b;
         });
-        $this->watch('add', [100, 200]);
-        $this->assertTrue($this->emit('add'));
+        $watchdog->watch('add', [100, 200]);
+        $this->assertTrue($watchdog->emit('add'));
         $this->assertSame(300, $sum);
     }
 
     public function testWatchBeforePromise()
     {
         $sum = 0;
-        $this->watch('add', [100, 200]);
-        $this->promise('add', function ($a, $b) use (&$sum) {
+        $watchdog = new EventWatchdog();
+        $watchdog->watch('add', [100, 200]);
+        $watchdog->promise('add', function ($a, $b) use (&$sum) {
             $sum += $a + $b;
         });
-        $this->assertTrue($this->emit('add'));
+        $this->assertTrue($watchdog->emit('add'));
         $this->assertSame(300, $sum);
     }
 
     public function testManyWatchAfterPromise()
     {
         $sum = 0;
-        $this->promise('add', function ($a, $b) use (&$sum) {
+        $watchdog = new EventWatchdog();
+        $watchdog->promise('add', function ($a, $b) use (&$sum) {
             $sum += $a + $b;
         });
-        $this->watch('add', [100, 200]);
-        $this->watch('add', [300, 400]);
-        $this->assertTrue($this->emit('add'));
+        $watchdog->watch('add', [100, 200]);
+        $watchdog->watch('add', [300, 400]);
+        $this->assertTrue($watchdog->emit('add'));
         $this->assertSame(1000, $sum);
     }
 
     public function testManyEmitForPromiseCall()
     {
         $sum = 0;
-        $this->watch('add', [100, 200]);
-        $this->promise('add', function ($a, $b) use (&$sum) {
+        $watchdog = new EventWatchdog();
+        $watchdog->watch('add', [100, 200]);
+        $watchdog->promise('add', function ($a, $b) use (&$sum) {
             $sum += $a + $b;
         });
-        $this->assertTrue($this->emit('add'));
-        $this->assertTrue($this->emit('add')); // must do no change
+        $this->assertTrue($watchdog->emit('add'));
+        $this->assertTrue($watchdog->emit('add')); // must do no change
         $this->assertSame(300, $sum);
     }
 
     public function testPutArgumentsForPromise()
     {
         $sum = 0;
-        $this->watch('add', [100, 200]);
-        $this->promise('add', function ($a, $b, $n) use (&$sum) {
+        $watchdog = new EventWatchdog();
+        $watchdog->watch('add', [100, 200]);
+        $watchdog->promise('add', function ($a, $b, $n) use (&$sum) {
             $sum += ($a + $b) * $n;
         });
-        $this->assertTrue($this->emit('add', [2]));
+        $this->assertTrue($watchdog->emit('add', [2]));
         $this->assertSame(600, $sum);
     }
 }
