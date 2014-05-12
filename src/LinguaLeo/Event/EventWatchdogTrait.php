@@ -37,7 +37,7 @@ trait EventWatchdogTrait
      * @param array $values
      * @return void
      */
-    public function watch($eventName, array $values = [])
+    public function watch($eventName, array $values)
     {
         $this->listeners[$eventName]['watchdog'][] = $values;
     }
@@ -50,14 +50,14 @@ trait EventWatchdogTrait
      * @param int $priority
      * @return void
      */
-    public function promise($eventName, callable $callback, $priority = 999)
+    public function promise($eventName, callable $callback, $priority = -999)
     {
         $this->on($eventName, function () use ($eventName, $callback) {
             if (empty($this->listeners[$eventName]['watchdog'])) {
                 return;
             }
             $arguments = func_get_args();
-            while ($values = array_shift($this->listeners[$eventName]['watchdog'])) {
+            while (null !== ($values = array_shift($this->listeners[$eventName]['watchdog']))) {
                 call_user_func_array($callback, array_merge($values, $arguments));
             }
         }, $priority);

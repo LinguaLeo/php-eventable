@@ -35,7 +35,7 @@ interface EventWatchdogInterface extends EventEmitterInterface
      * @param array $values
      * @return void
      */
-    public function watch($eventName, array $values = []);
+    public function watch($eventName, array $values);
 
     /**
      * Promises a handler for watched values

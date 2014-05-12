@@ -100,4 +100,19 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($watchdog->emit('add', [2]));
         $this->assertSame(600, $sum);
     }
+
+    public function testPromiseAndListenersDefaultPriority()
+    {
+        $data = [];
+        $watchdog = new EventWatchdog();
+        $watchdog->promise('add', function () use (&$data) {
+            $data[] = 2;
+        });
+        $watchdog->on('add', function () use (&$data) {
+            $data[] = 1;
+        });
+        $watchdog->watch('add', []);
+        $this->assertTrue($watchdog->emit('add'));
+        $this->assertSame([1, 2], $data);
+    }
 }
