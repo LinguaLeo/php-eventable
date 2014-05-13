@@ -32,7 +32,7 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
     {
         $running = false;
         $watchdog = new EventWatchdog();
-        $watchdog->promise('something', function () use (&$running) {
+        $watchdog->deliver('something', function () use (&$running) {
             $running = true;
         });
         $this->assertTrue($watchdog->emit('something'));
@@ -43,10 +43,10 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
     {
         $sum = 0;
         $watchdog = new EventWatchdog();
-        $watchdog->promise('add', function ($a, $b) use (&$sum) {
+        $watchdog->deliver('add', function ($a, $b) use (&$sum) {
             $sum += $a + $b;
         });
-        $watchdog->watch('add', [100, 200]);
+        $watchdog->postpone('add', [100, 200]);
         $this->assertTrue($watchdog->emit('add'));
         $this->assertSame(300, $sum);
     }
@@ -55,8 +55,8 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
     {
         $sum = 0;
         $watchdog = new EventWatchdog();
-        $watchdog->watch('add', [100, 200]);
-        $watchdog->promise('add', function ($a, $b) use (&$sum) {
+        $watchdog->postpone('add', [100, 200]);
+        $watchdog->deliver('add', function ($a, $b) use (&$sum) {
             $sum += $a + $b;
         });
         $this->assertTrue($watchdog->emit('add'));
@@ -67,11 +67,11 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
     {
         $sum = 0;
         $watchdog = new EventWatchdog();
-        $watchdog->promise('add', function ($a, $b) use (&$sum) {
+        $watchdog->deliver('add', function ($a, $b) use (&$sum) {
             $sum += $a + $b;
         });
-        $watchdog->watch('add', [100, 200]);
-        $watchdog->watch('add', [300, 400]);
+        $watchdog->postpone('add', [100, 200]);
+        $watchdog->postpone('add', [300, 400]);
         $this->assertTrue($watchdog->emit('add'));
         $this->assertSame(1000, $sum);
     }
@@ -80,8 +80,8 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
     {
         $sum = 0;
         $watchdog = new EventWatchdog();
-        $watchdog->watch('add', [100, 200]);
-        $watchdog->promise('add', function ($a, $b) use (&$sum) {
+        $watchdog->postpone('add', [100, 200]);
+        $watchdog->deliver('add', function ($a, $b) use (&$sum) {
             $sum += $a + $b;
         });
         $this->assertTrue($watchdog->emit('add'));
@@ -93,8 +93,8 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
     {
         $sum = 0;
         $watchdog = new EventWatchdog();
-        $watchdog->watch('add', [100, 200]);
-        $watchdog->promise('add', function ($a, $b, $n) use (&$sum) {
+        $watchdog->postpone('add', [100, 200]);
+        $watchdog->deliver('add', function ($a, $b, $n) use (&$sum) {
             $sum += ($a + $b) * $n;
         });
         $this->assertTrue($watchdog->emit('add', [2]));
@@ -105,13 +105,13 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
     {
         $data = [];
         $watchdog = new EventWatchdog();
-        $watchdog->promise('add', function () use (&$data) {
+        $watchdog->deliver('add', function () use (&$data) {
             $data[] = 2;
         });
         $watchdog->on('add', function () use (&$data) {
             $data[] = 1;
         });
-        $watchdog->watch('add', []);
+        $watchdog->postpone('add', []);
         $this->assertTrue($watchdog->emit('add'));
         $this->assertSame([1, 2], $data);
     }

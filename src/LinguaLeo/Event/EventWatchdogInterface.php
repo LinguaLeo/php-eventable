@@ -29,21 +29,21 @@ namespace LinguaLeo\Event;
 interface EventWatchdogInterface extends EventEmitterInterface
 {
     /**
-     * Watches values for an event
+     * Saves values for a deferred event trigger
      *
      * @param string $eventName
      * @param array $values
      * @return void
      */
-    public function watch($eventName, array $values);
+    public function postpone($eventName, array $values);
 
     /**
-     * Promises a handler for watched values
+     * Subscribes a callback for postponed values
      *
      * @param string $eventName
      * @param callable $callback
      * @param int $priority
      * @return void
      */
-    public function promise($eventName, callable $callback, $priority = 999);
+    public function deliver($eventName, callable $callback, $priority = 999);
 }
