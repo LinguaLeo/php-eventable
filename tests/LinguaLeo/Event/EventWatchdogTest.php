@@ -28,7 +28,7 @@ namespace LinguaLeo\Event;
 
 class EventWatchdogTest extends \PHPUnit_Framework_TestCase
 {
-    public function testEmptyPromise()
+    public function testEmptyDeliver()
     {
         $running = false;
         $watchdog = new EventWatchdog();
@@ -39,7 +39,7 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($running);
     }
 
-    public function testWatchAfterPromise()
+    public function testPostponeAfterDeliver()
     {
         $sum = 0;
         $watchdog = new EventWatchdog();
@@ -51,7 +51,7 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(300, $sum);
     }
 
-    public function testWatchBeforePromise()
+    public function testPostponeBeforeDeliver()
     {
         $sum = 0;
         $watchdog = new EventWatchdog();
@@ -63,7 +63,7 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(300, $sum);
     }
 
-    public function testManyWatchAfterPromise()
+    public function testManyPostponeAfterDeliver()
     {
         $sum = 0;
         $watchdog = new EventWatchdog();
@@ -76,7 +76,7 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1000, $sum);
     }
 
-    public function testManyEmitForPromiseCall()
+    public function testManyEmitForDeliverCall()
     {
         $sum = 0;
         $watchdog = new EventWatchdog();
@@ -89,7 +89,7 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(300, $sum);
     }
 
-    public function testPutArgumentsForPromise()
+    public function testPutArgumentsForDeliver()
     {
         $sum = 0;
         $watchdog = new EventWatchdog();
@@ -101,7 +101,7 @@ class EventWatchdogTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(600, $sum);
     }
 
-    public function testPromiseAndListenersDefaultPriority()
+    public function testDeliverAndListenersDefaultPriority()
     {
         $data = [];
         $watchdog = new EventWatchdog();
